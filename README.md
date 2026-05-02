@@ -185,7 +185,7 @@ python src/main.py
 ## ファイル構成
 
 ```
-ai-brain-organizer/
+ai-secretary/
 ├── .github/workflows/
 │   └── daily-organize.yml       # 毎朝の自動実行
 ├── scripts/
