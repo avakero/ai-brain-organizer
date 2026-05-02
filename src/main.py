@@ -4,7 +4,7 @@
 GitHub Actions から daily-organize.yml で呼び出される。
 処理フロー:
   1. Notion から Status=Inbox のページを取得
-  2. 各ページを Claude API で推論
+  2. 各ページを Straico (OpenAI互換) 経由で推論
   3. Notion のプロパティを更新
   4. 整理結果を HTML メールで送信
 """
@@ -38,13 +38,13 @@ def main() -> None:
     print("=" * 60)
 
     # 環境変数の取得
-    anthropic_api_key = get_env("ANTHROPIC_API_KEY")
+    straico_api_key = get_env("STRAICO_API_KEY")
     notion_api_key = get_env("NOTION_API_KEY")
     notion_database_id = get_env("NOTION_DATABASE_ID")
     gmail_user = get_env("GMAIL_USER")
     gmail_app_password = get_env("GMAIL_APP_PASSWORD")
     recipient_email = get_env("RECIPIENT_EMAIL")
-    claude_model = get_env("CLAUDE_MODEL", required=False, default="claude-opus-4-7")
+    straico_model = get_env("STRAICO_MODEL", required=False, default="anthropic/claude-opus-4-7")
 
     recipients = [r.strip() for r in recipient_email.split(",") if r.strip()]
     today = datetime.now(JST)
@@ -53,12 +53,12 @@ def main() -> None:
 
     print(f"📅 実行日時: {today.isoformat()}")
     print(f"📧 送信先: {', '.join(recipients)}")
-    print(f"🤖 モデル: {claude_model}")
+    print(f"🤖 モデル: {straico_model} (via Straico)")
     print()
 
     # クライアント初期化
     notion = NotionAIBrainClient(notion_api_key, notion_database_id)
-    organizer = AIOrganizer(anthropic_api_key, model=claude_model)
+    organizer = AIOrganizer(straico_api_key, model=straico_model)
     sender = EmailSender(gmail_user, gmail_app_password)
 
     # ========== STEP 1: Inbox ページ取得 ==========
@@ -86,7 +86,7 @@ def main() -> None:
         print("\n=== 完了 ===")
         return
 
-    # 既存タグ一覧を取得（Claude のヒントとして使う）
+    # 既存タグ一覧を取得（LLM のヒントとして使う）
     print("\n既存タグを取得中...")
     try:
         existing_tags = notion.fetch_existing_tags()
@@ -116,7 +116,7 @@ def main() -> None:
             print(f"  ⚠️ 本文取得失敗: {e}")
             body = ""
 
-        # Claude で推論
+        # Straico (LLM) で推論
         try:
             result = organizer.organize_page(
                 title=title,

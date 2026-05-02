@@ -28,13 +28,13 @@ jobs:
 
       - name: Run AI Brain Organizer
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          STRAICO_API_KEY: ${{ secrets.STRAICO_API_KEY }}
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
-          CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL || 'claude-opus-4-7' }}
+          STRAICO_MODEL: ${{ vars.STRAICO_MODEL || 'anthropic/claude-opus-4-7' }}
         run: |
           cd src
           python main.py

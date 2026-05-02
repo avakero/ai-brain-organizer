@@ -18,7 +18,10 @@ def main():
         api_key=os.environ["NOTION_API_KEY"],
         database_id=os.environ["NOTION_DATABASE_ID"],
     )
-    organizer = AIOrganizer(api_key=os.environ["ANTHROPIC_API_KEY"])
+    organizer = AIOrganizer(
+        api_key=os.environ["STRAICO_API_KEY"],
+        model=os.environ.get("STRAICO_MODEL", "anthropic/claude-opus-4-7"),
+    )
 
     print("Inbox を取得中...")
     pages = notion.fetch_inbox_pages()
